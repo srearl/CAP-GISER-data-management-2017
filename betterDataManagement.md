@@ -1,0 +1,694 @@
+<style>
+.footer {
+    color: #434343;
+    background: #ffffffff;
+    position: fixed;
+    top: 90%;
+    text-align: left;
+    width: 100%;
+}
+.header {
+    color: black;
+    background: #E8E8E8;
+    position: fixed;
+    bottom: 90%;
+    text-align:center;
+    width:100%;
+}
+.small-code pre code {
+  font-size: 0.9em;
+}
+.column-left{
+  float: left;
+  width: 50%;
+  text-align: left;
+}
+.column-right{
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+.center{
+    left: 50%;
+    text-align: center;
+}
+</style>
+
+effective data management
+========================================================
+author: 
+date: 2017-11-17
+autosize: true
+font-family: 'Arial'
+width: 1920
+height: 1080
+
+
+workflow
+========================================================
+title: false
+
+research data workflow: this is your world (or it will be soon)
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/workflow.png" width="90%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>modified from Jenny Bryan’s UBC Stat 545 course (http://stat545.com/) who adapted it from Roger Peng (biostat.jhsph.edu/~rpeng/)</p>
+</div>
+
+
+challenges
+========================================================
+title: true
+
+* how do you keep that up-to-date?
+* what if something changes, what if something needs to be redone - how do you manage that?
+* why do the results in table 1 not seem to correspond to the results in figure 1?
+* why were those particular samples omitted?
+* where did I get these data?
+* how did I make that figure?
+
+<br>
+<b>basically, if the thought of redoing your analyses is terrifying then you are doing it wrong (paraphrasing Jenny Bryan)</b>
+
+
+workflow with data
+========================================================
+title: false
+
+<p style="margin-bottom:0;">research data workflow: this is your world (or it will be soon)</p>
+
+<p style="margin-bottom:0;">now add to that publishing your <span style="color:#71A3C3;">data and code</span></p>
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/workflow_with_data.png" width="90%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>modified from Jenny Bryan’s UBC Stat 545 course (http://stat545.com/) who adapted it from Roger Peng (biostat.jhsph.edu/~rpeng/)</p>
+</div>
+
+
+reproducible research
+========================================================
+title: false
+
+<br>
+
+<p>
+  <b>reproducible</b>: the calculation of quantitative sciencific results by independent researchers using the original data and methods (National Science Foundation Subcommittee on Replicability in Science)
+</p>
+
+<br>
+
+<p>
+  not as stringent as <b>replicable</b>: can someone repeat the experiment and get the same result
+</p>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Steps toward reproducible research, Karl Broman, Biostatistics & Medical Informatics Univ. Wisconsin–Madison, kbroman.org, github.com/kbroman, @kwbroman, Slides: bit.ly/jsm2016</p>
+</div>
+
+
+what we will cover today
+========================================================
+title: true
+
+* best practices
+  + naming
+  + organiztion
+  + scripting
+* spreadsheets
+* literate programming
+* version control
+* getting started
+* data management plans & publishing your data
+
+
+BP (Best Practice): naming - principles for file names
+========================================================
+title: true
+
+* machine readable
+* human readable
+* plays well with default ordering
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"naming things" by Jenny Bryan https://speakerdeck.com/jennybc/how-to-name-files</p>
+</div>
+
+
+BP: naming - machine readable
+========================================================
+title: true
+
+* regular expression and globbing friendly
+  + avoid spaces, punctuation, accented characters, case sensivity
+* easy to compute on with deliberate use of delimiters
+
+<p style="margin-bottom:0;">example: <b>"2017-11-17_berneilwash_oxygen_day_1.csv"</b></p>
+
+<p style="margin-bottom:0;">underscores allow us to delimit units of metadata and facilitate searching</p>
+
+<br>
+* easy to search for files later
+* easy to narrow file lists based on names
+* easy to extract information from the file names, e.g., by splitting
+* avoiding spaces, punctuation, accented characters, case sensivity will make your life much easier
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"naming things" by Jenny Bryan https://speakerdeck.com/jennybc/how-to-name-files</p>
+</div>
+
+
+BP: naming - human readable
+========================================================
+title: true
+
+* names contain info about the content
+* easy to figure out what what something is based on the name
+
+for example <i><b>2016_salmon_counts.csv</i></b> actually conveys a lot of information about the object, and has a whole lot more meaning than <i><b>fishData.csv</i></b>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"naming things" by Jenny Bryan https://speakerdeck.com/jennybc/how-to-name-files</p>
+</div>
+
+
+BP: naming - names matter in times of stress
+========================================================
+title: true
+
+which set of file(names)s would you prefer at 3 a.m. before a dealine?
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/good_bad_names.png" width="75%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div class="footer" style="font-size:65%;">
+  <hr>
+  <p>"naming things" by Jenny Bryan https://speakerdeck.com/jennybc/how-to-name-files</p>
+</div>
+
+
+BP: naming - plays well with default ordering
+========================================================
+title: true
+
+* put something numeric first
+* use the ISO 8601 standard for dates (YYYY-MM-DD) everwhere, always without exception ever
+* left pad numbers with zeroes as needed
+  + 1_file_name.csv
+  + 11_file_name.csv
+  + 2_file_name.csv
+  + --------------------
+  + 01_file_name.csv
+  + 02_file_name.csv
+  + 11_file_name.csv
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"naming things" by Jenny Bryan https://speakerdeck.com/jennybc/how-to-name-files</p>
+</div>
+
+
+BP: dates matter (a lot!)
+========================================================
+title: true
+
+<div align="left" style="margin-top:0%;">
+  <img src="./figures/noniso.png" width="50%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<small>
+  comprehensive map of all countries in the world that use MMDDYYYY format
+  
+  use the ISO 8601 standard for dates (YYYY-MM-DD) everwhere, always without exception ever
+</small>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"naming things" by Jenny Bryan https://speakerdeck.com/jennybc/how-to-name-files</p>
+</div>
+
+
+BP: employ sound project organization
+========================================================
+title: true
+left: 80%
+
+<small>your closest collaborator is you six months ago, but you do not reply to emails (Karl Broman paraphrasing Mark Holder)</small>
+
+<div style="float: right; width: 40%;">
+  <br>
+  <ul>
+    <li>make the project understandable to others where others includes your future self</li>
+    <li>segregate all the materials for a project in one directory</li>
+    <li>separate raw from processed data; put code in a separate directory</li>
+    <li>include README files</li>
+  </ul>
+</div>
+
+<div style="float: left; width: 60%;">
+  <img src="./figures/projectOrganizationCropped.png" width="60%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Steps toward reproducible research, Karl Broman, Biostatistics & Medical Informatics Univ. Wisconsin–Madison, kbroman.org, github.com/kbroman, @kwbroman, Slides: bit.ly/jsm2016</p>
+</div>
+
+
+BP: research compendium
+========================================================
+title: true
+
+...a standard and easily recognisable way for organising the digital materials of a project to enable others to inspect, reproduce, and extend the research
+
+general principles:
+* organize according to prevailing conventions (e.g., R package structure)
+* maintain a clear separation of data, method, and output, while unambiguously expressing the relationship between the three
+* specify the computational environment used for the original analysis
+* organize such that another person can know what to expect from the plain meaning of the file and directory names
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Marwick B, Boettiger C, Mullen L. (2017) Packaging data analytical work reproducibly using R (and friends) PeerJ Preprints 5:e3192v1 https://doi.org/10.7287/peerj.preprints.3192v1</p>
+</div>
+
+
+BP: keep the raw data raw
+========================================================
+title: true
+
+* save the raw data
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Wilson G, Bryan J, Cranston K, Kitzes J, Nederbragt L, Teal TK (2017) Good enough practices in scientific computing. PLoS Comput Biol13(6): e1005510. https://doi.org/10.1371/journal.pcbi.1005510</p>
+</div>
+
+
+BP: thoughtful curation
+========================================================
+title: true
+
+* curate your data in a way that you would like to receive it
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Wilson G, Bryan J, Cranston K, Kitzes J, Nederbragt L, Teal TK (2017) Good enough practices in scientific computing. PLoS Comput Biol13(6): e1005510. https://doi.org/10.1371/journal.pcbi.1005510</p>
+</div>
+
+
+BP: open file formats
+========================================================
+title: true
+
+* use open file formats (e.g., csv not xlsx)
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Wilson G, Bryan J, Cranston K, Kitzes J, Nederbragt L, Teal TK (2017) Good enough practices in scientific computing. PLoS Comput Biol13(6): e1005510. https://doi.org/10.1371/journal.pcbi.1005510</p>
+</div>
+
+
+BP: analysis-friendly data
+========================================================
+title: true
+
+* create analysis-friendly data:
+  + each column a variable
+  + each row an observation
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Wilson G, Bryan J, Cranston K, Kitzes J, Nederbragt L, Teal TK (2017) Good enough practices in scientific computing. PLoS Comput Biol13(6): e1005510. https://doi.org/10.1371/journal.pcbi.1005510</p>
+</div>
+
+
+BP: create analysis-friendly data
+========================================================
+title: false
+
+* each column a variable
+* each row an observation
+
+
+| Sepal.Length| Sepal.Width| Petal.Length| Petal.Width|Species |
+|------------:|-----------:|------------:|-----------:|:-------|
+|          5.1|         3.5|          1.4|         0.2|setosa  |
+|          4.9|         3.0|          1.4|         0.2|setosa  |
+|          4.7|         3.2|          1.3|         0.2|setosa  |
+|          4.6|         3.1|          1.5|         0.2|setosa  |
+|          5.0|         3.6|          1.4|         0.2|setosa  |
+|          5.4|         3.9|          1.7|         0.4|setosa  |
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Wilson G, Bryan J, Cranston K, Kitzes J, Nederbragt L, Teal TK (2017) Good enough practices in scientific computing. PLoS Comput Biol13(6): e1005510. https://doi.org/10.1371/journal.pcbi.1005510</p>
+</div>
+
+
+BP: create analysis-friendly data
+========================================================
+title: false
+
+* each column a variable
+* each row an observation
+
+
+|Species |metric       | value|
+|:-------|:------------|-----:|
+|setosa  |Sepal.Length |   5.1|
+|setosa  |Sepal.Length |   4.9|
+|setosa  |Sepal.Length |   4.7|
+|setosa  |Sepal.Length |   4.6|
+|setosa  |Sepal.Length |   5.0|
+|setosa  |Sepal.Length |   5.4|
+|setosa  |Sepal.Width  |   3.5|
+|setosa  |Sepal.Width  |   3.0|
+|setosa  |Sepal.Width  |   3.2|
+|setosa  |Sepal.Width  |   3.1|
+|setosa  |Sepal.Width  |   3.6|
+|setosa  |Sepal.Width  |   3.9|
+|setosa  |Petal.Length |   1.4|
+|setosa  |Petal.Length |   1.4|
+|setosa  |Petal.Length |   1.3|
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Wilson G, Bryan J, Cranston K, Kitzes J, Nederbragt L, Teal TK (2017) Good enough practices in scientific computing. PLoS Comput Biol13(6): e1005510. https://doi.org/10.1371/journal.pcbi.1005510</p>
+</div>
+
+
+BP: record everything
+========================================================
+title: true
+
+* record all the steps of the data process
+
+
+BP: everything in a script
+========================================================
+title: true
+
+<p style="color:#0000FF">The most basic principle for reproducible research is: do everything via code</p>
+
+* downloading data from the web, 
+* converting an Excel file to CSV,
+* renaming columns or variables, 
+* omitting bad samples or data points
+* ...do all of these with scripts
+
+You will be tempted to open up a data file and hand-edit. But if you get a revised version of that file, you will need to do it again, and it will be harder to figure out what it was that you did.
+
+Some things are more cumbersome via code but you will save time in the long run.
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Steps toward reproducible research, Karl Broman, Biostatistics & Medical Informatics Univ. Wisconsin–Madison, kbroman.org, github.com/kbroman, @kwbroman, Slides: bit.ly/jsm2016</p>
+</div>
+
+
+BP: learn a language. any language, just do it
+========================================================
+title: true
+
+<div style="float:left; width:50%; margin-top:5%;">
+  <img src="./figures/rlogo.jpg" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div style="float: right; width: 50%; margin-top:6%;">
+  <img src="./figures/python-logo.png" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+spreadsheets: the dark side
+========================================================
+title: true
+
+<div align="center" style="margin-top:5%;">
+  <img src="./figures/excel_errors_wash_post.png" width="50%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+spreadsheets: the 2nd best tool for everything
+========================================================
+title: true
+
+<div style="float:left; width:60%; margin-top:0%;">
+  <img src="./figures/spreadsheet_hidden_data.png" width="90%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div style="float: right; width: 40%;">
+  the beauty and the travesty of spreadsheets is that they allow you to do just about anything
+  <br>
+  <br>
+    <ul>
+      <li>data in merged cells</li>
+      <li>data in formatting</li>
+      <li>small multiples</li>
+      <li>data in formulas</li>
+    </ul>
+    <p>use open file formats (e.g., CSV, not XLSX)</p>
+  <br>
+</div>
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"spreadsheets" by Jenny Bryan https://speakerdeck.com/jennybc/spreadsheets</p>
+</div>
+
+
+spreadsheets versus scripting
+========================================================
+title: false
+
+consider, we want to remove samples that we feel may have been contaminated...
+
+<div style="float:left; width:50%;">
+  <p>
+    <b>in a R script</b>
+  </p>
+  <hr>
+  <p>...some work...</p>
+  <p style="margin-bottom:0;"># remove samples 4, 5, 6, that may</p>
+  <p style="margin-bottom:0;"># have been compromised due to</p>
+  <p style="margin-bottom:0;"># wading upstream during sampling</p>
+  <br> 
+  <p style="margin-bottom:0;">chemistry_data %>%
+  <p style="margin-bottom:0; text-indent:1em;">filter(!sample_id %in% c(4,5,6))</p>
+  <br> 
+  <p>...more work...</p>
+</div>
+
+<div style="float:right; width:49%;">
+  <p>
+    <b>in a spreadsheet</b>
+  </p>
+  <hr>
+  <img src="./figures/spreadsheet_remove_samples.png" width="90%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+literate programming
+========================================================
+title: true
+
+a common approach
+
+<div>
+  <img src="./figures/literateProgramming.png" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"The Plain Person's Guide to Plain Text Social Science" version 2017-06-19 by Kieran Healy "https://kieranhealy.org/files/papers/plain-person-text.pdf"</p>
+</div>
+
+
+literate programming
+========================================================
+title: true
+
+* the problem is that the gaps are particularly prone to errors
+* literate programming is essentially the integration of code and text
+
+<small>Knuth, D. E. (1992), Literate programming, CSLI Lecture Notes, Stanford, CA: Center for the Study of Language and Information (CSLI), 1992</small>
+
+<div>
+  <img src="./figures/literateProgramming.png" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"The Plain Person's Guide to Plain Text Social Science" version 2017-06-19 by Kieran Healy "https://kieranhealy.org/files/papers/plain-person-text.pdf"</p>
+</div>
+
+
+version control
+========================================================
+title: true
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/CAP_renewal_screenshot.png" width="80%" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+version control: Git
+========================================================
+title: true
+
+* Git watches repositories (like a directory) for changes
+* It asks that you describe changes when they are made
+* It remembers old versions if you need them
+* It also keeps an eye out for conflicts, and forces you to resolve them
+* It (through GitHub) allows multiple people to contribute to the same repository, and does all of the above for everyone at once
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"Git" by Jeff Goldsmith https://speakerdeck.com/jeffgoldsmith/dsi-git-and-github</p>
+</div>
+
+
+version control: Git and GitHub
+========================================================
+title: true
+
+<p align="center" style="margin-top:10%;">
+  <b>Git  !=  GitHub</b>
+</p>
+
+<br>
+
+* Git lives on your computer
+* GitHub is a web-based platform for storing collaboration and facilitating collaboration
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"Git" by Jeff Goldsmith https://speakerdeck.com/jeffgoldsmith/dsi-git-and-github</p>
+</div>
+
+I am not saying it is easy
+========================================================
+title: true
+
+Kieran Healy on two revolutions in computing:
+
+"On one side, the mobile, cloud-centered, touch-screen, phone-or-tablet model has brought powerful computing to more people than ever before."
+
+On the other side, tools for coding, data analysis, and writing are also revolutionary but mostly work by gluing together separate, specialized widgets that do much less to hide the operation system layer, and require knowledge of things like the file system.
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>"The Plain Person's Guide to Plain Text Social Science" version 2017-06-19 by Kieran Healy "https://kieranhealy.org/files/papers/plain-person-text.pdf"</p>
+</div>
+
+
+OHI: nature ecology & evolution
+========================================================
+title: true
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/lowndes_title.png" width="80%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Our path to better science in less time using open data science tools. Julia S. Stewart Lowndes, Benjamin D. Best, Courtney Scarborough, Jamie C. Afflerbach, Melanie R. Frazier, Casey C. O’Hara, Ning Jiang & Benjamin S. Halpern. Nature Ecology & Evolution 1, Article number: 0160 (2017) doi:10.1038/s41559-017-0160</p>
+</div>
+
+
+OHI: framework
+========================================================
+title: true
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/ohi_framework.png" width="80%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Our path to better science in less time using open data science tools. Julia S. Stewart Lowndes, Benjamin D. Best, Courtney Scarborough, Jamie C. Afflerbach, Melanie R. Frazier, Casey C. O’Hara, Ning Jiang & Benjamin S. Halpern. Nature Ecology & Evolution 1, Article number: 0160 (2017) doi:10.1038/s41559-017-0160</p>
+</div>
+
+
+OHI: evolution of a workflow
+========================================================
+title: true
+
+<div align="center" style="margin-top:0%;">
+  <img src="./figures/lowndes_figure1.jpg" width="60%"" style="background-color:transparent; border:0px; box-shadow:none;"></img>
+</div>
+
+<div class="footer" style="font-size:60%;">
+  <hr>
+  <p>Our path to better science in less time using open data science tools. Julia S. Stewart Lowndes, Benjamin D. Best, Courtney Scarborough, Jamie C. Afflerbach, Melanie R. Frazier, Casey C. O’Hara, Ning Jiang & Benjamin S. Halpern. Nature Ecology & Evolution 1, Article number: 0160 (2017) doi:10.1038/s41559-017-0160</p>
+</div>
+
+
+BP: forethought
+========================================================
+title: true
+
+strive for reproducibility from the outset
+
+
+data management plan
+========================================================
+title: true
+
+describes how data will be collected, managed, and preserved
+
+for example, NSF's generic guidelines:
+* roles and responsibilities
+* types of data produced
+* data and metadata standards
+* policies for access and sharing
+* policies for reuse, redistribution
+* plans for archiving and preservation
+
+
+publishing your data
+========================================================
+title: true
+
+
+RDM course slide
+========================================================
+title: false
+
+<b>Research Data Management</b>
+ 
+Seminar: SOS 598 (24085)
+
+When: Spring 2018
+
+Day/time: Friday, 12:15-1:30 PM
+
+1 credit hour
+
+
+bookmarks
+========================================================
+title: false
+
+<!-- have these bookmarks open: -->
+<!-- https://www.re3data.org/ -->
+<!-- https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-sbc&identifier=74 -->

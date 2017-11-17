@@ -1,0 +1,158 @@
+---
+title: "Temporal patterns of arthropod communities in the McDowell Sonoran Preserve"
+author: "Stevan Earl"
+bibliography: McDowellPreserve.bib
+output:
+  # html_document:
+  #   fig_caption: yes
+  #   theme: journal
+  word_document: default
+abstract: The McDowell Sonoran Preserve is a rich desert environment. The arthropod
+  assemblage is among the most diverse of all desert habitats. The arthropod assemblage
+  mimics the predominant vegetation with clear transitions along the north-south axis.
+  Temporally, the numbers and types of organisms reflect precipitation patterns.
+---
+
+<style type="text/css">
+h1 { /* Header 1 */
+ font-size: 12px;
+ color: Black;
+}
+</style>
+
+```{r libraries, include=FALSE}
+library(tidyverse)
+```
+
+
+```{r import_data, include=FALSE}
+# Import the data using the read_csv function that is part of the tidyverse 
+# package. In most database systems, lack of data (not zero, but specifically a 
+# lack of data) are represented by "NULL". In R, lack of data are represented by
+# NA. Add an argument to convert any NULL or blank values to NA upon import. One
+# nice thing about the read_csv package is that it does not automatically
+# convert strings to factors as is the case for many other import methods.
+mcdowellArthropods <- read_csv('mcdowellArthropods.csv', na=c("NULL", ""))
+```
+
+
+```{r check_class, include=FALSE}
+# inspect the data - what type of entity is this?
+class(mcdowellArthropods)
+```
+
+
+```{r check_structure, include=FALSE}
+# inspect the data - what is the structure?
+str(mcdowellArthropods)
+```
+
+
+```{r unique_value, include=FALSE}
+# inspect the unique values. In this case, we are using the apply function to 
+# "apply" the unique function over the margins of a data frame. the third
+# argument of the function ("unique") indicates that we want the unique values
+# of the columns. that we want the unique values of the columns is indicated by
+# the second argument ("2") of this function; we would have used a 1 if we
+# wanted the unique values of each row (but that would not make sense in this
+# case).
+apply(mcdowellArthropods, 2, unique)
+```
+
+
+```{r check_low_trapcount, include=FALSE}
+# Why are some trapcounts so low? We need to take a closer look a those. we will
+# use the filter function in dplyr. Here, we are passing the mcdowellArthropods
+# data object to the filter function, which is part of the dplyr package. Dplyr
+# uses pipes (%>%) to link commands, a particularly nice feature when you are
+# performing many actions on an object. 
+mcdowellArthropods %>% 
+  filter(trapcount < 6) %>%
+  print(n = 50)
+
+# The base R version of performing the above (code below) is not onerous but
+# addressing the next chunk (orgs_by_season) would be far more painful without
+# pipes and dplyr.
+# print(mcdowellArthropods[mcdowellArthropods$trapcount < 6,], n = 50)
+```
+
+
+```{r orgs_per_season, include=FALSE}
+
+# Since they were pulled from a database, the data are already in a long format,
+# which is preferable for analysis relative to a wide format as you might
+# encouter in a spreadsheet where samples are rows and taxa are spread across
+# columns. We do, however, still need to modify the data for our analyses.
+
+# First, filter the traps with a low trap count noted in the previous step.
+
+# Second, for our analyses, we can ignore the different size classes so all organisms,
+# regardless of size, can be summed for each sample. 
+
+# Third, we want to bin the sampling dates by season and extract the year for plotting.
+
+# Finally, we need to standardize the sampling effort to account for an
+# inconsistent number of traps across sampling events, here we will use the
+# average number of organisms per trap per, per season across the years of study.
+
+orgs_by_season <- mcdowellArthropods %>% 
+  filter(trapcount > 4) %>%
+  rowwise() %>% 
+    mutate(allsizes = sum(lt2mm, `_2_5mm`, `_5_10mm`, gt10mm, unsized, na.rm = T)) %>% 
+  ungroup() %>%
+  mutate(season = ifelse(as.integer(format(sample_date, format = '%m')) %in% c(11,12,1,2), 'winter',
+                         ifelse(as.integer(format(sample_date, format = '%m')) %in% c(3,4), 'spring',
+                                ifelse(as.integer(format(sample_date, format = '%m')) %in% c(5,6,7,8), 'summer',
+                                       ifelse(as.integer(format(sample_date, format = '%m')) %in% c(9,10), 'fall', NA))))) %>% 
+  mutate(year = format(sample_date, format = '%Y')) %>% 
+  group_by(site_id, season, year) %>%
+    summarise(average = sum(allsizes / trapcount)) %>%
+  ungroup()
+```
+
+### Introduction
+
+Protected lands, such as Scottsdale’s McDowell Sonoran Preserve (hereafter referred to as the Preserve), provide critical refuge for native biota and natural, ecological processes within and near urban environments.  At the same time, a key feature that makes urban, open-space preserves so valuable, their proximity to urban areas, places tremendous strain on the ecological integrity of these systems through visitation, habitat fragmentation, and the introduction of exotic species among others.  Effective management of these systems requires detailed knowledge of the biota within the protected area and monitoring of ecological indicators through time. Arthropods are  well suited to monitoring ecological health. This diverse group of organisms typically reflects overall biological diversity of a system and includes several trophic levels; their short generation times mean they will likely respond quickly to change; and they are relatively easy to sample. As part of the McDowell Sonoran Field Institute's (MSFI) broader effort to establish a baseline inventory of biota in the Preserve, investigators with the Central Arizona−Phoenix Long-Term Ecological Research (CAP LTER) project at Arizona State University (ASU) are monitoring ground-dwelling arthropods at select locations that reflect a diversity of habitat within the Preserve. Investigators employed a sampling design that was intended to provide insight regarding influence of the urban/wildland interface on the arthropod community within the protected area. The simple but effective technique of pitfall trapping was used to sample ground-dwelling arthropods at select locations spanning a wide range of habitat with the Preserve.
+
+
+### Methods
+ 
+*Pitfall trap methods and sampling locations*
+
+Ten transects for the collection of ground-dwelling arthropods were established.  Each transect consists of 10 traps spaced ~5m apart along a transect line established perpendicular to slopes sensu [@mcintyre_ecology_2000]. Each trap consists of a short (~6 in.) section of 4-in. pipe buried flush with the soil surface.  Traps are covered with a tight-fitting PVC cap until being set at which time the cap is removed and a 16-oz. plastic cup is inserted into the pipe. Traps are left uncovered for ~72 consecutive hours until the sample cup is collected. Upon collection, trap contents are transferred to sample jars containing 70% ethyl alcohol for preservation, and subsequent transport to ASU (or MSC offices) for sorting and identification. Arthropods are sorted to the lowest practical taxonomic (LPT) level  by an MSFI intern (Chad Allen) and/or CAP LTER taxonomist Maggie Tseng.
+
+Pitfall trap transect locations include five groups of paired transects that span a large range of the north-south and east-west axes of the Preserve (Figure 1), and include numerous unique vegetation communities. Four transect pairs are positioned such that one transect is within 100 m of the Preserve boundary and existing development, and the second transect at least 0.5 km from the Preserve boundary/development. A fifth ‘control’ paired transect is located in a similar fashion but at a location where there is not currently development near the Preserve boundary (Dixie Mine and Prospector; Figure 1). Transect locations were selected specifically to include relatively similar geomorphological characteristics, including elevation (610-914 m), slope (≤ 20%), and aspect (0-270°, 315-360°) to minimize extraneous factors. All transects are positioned within 75 m of existing trails to facilitate access and limit off-trail travel while keeping traps out of public view.
+
+Sampling is conducted quarterly in keeping with CAP LTER protocols and concomitant sampling at other Valley location. As of this writing, six quarterly collections (winter 2012 through spring 2013) have been conducted. A preliminary assessment of those data is presented here. More detailed analyses are planned following (at least) two more quarterly collections (summer, fall 2013). 
+
+### Results
+
+The six quarterly collections yielded 7,761 organisms that included 8 classes, 28 orders, 103 families, and 89 genera or subgenera. Ants (Family Formicidae) were by far the most common group, constituting 5 of the 10 most common taxa and 44.5% of the total number of organisms. Members of the order Collembola (12.7%), the subclass Acari (6.78%), and families Meinertellidae (3.9%) and Lepismatida (3.8%) rounded out the other 10 most common taxa. A complete list of taxa are provided in Appendix A. 
+
+Paired transects near the Dixie Mine (Prospector, Dixie Mine), the Brown's Ranch Trail head (Dixileta, LoneMtn), and the interior site at Tom's Thumb were among the most productive sites (Table 1). Statistics from the paired transects near the Brown's Ranch trail head should be viewed cautiously as relatively fewer collections were made at those locations owing to the start of trail head construction shortly after sampling began. A greater number of organisms were collected at all interior sites relative to the corresponding paired boundary site, but note that this pattern was evident also at the Dixie Mine and Prospector transects where the boundary site is not adjacent to development.
+
+The average number of organisms per trap, including all taxa (LPT), collected in 2012 were used for a preliminary assessment of arthropod community composition. Data from a CAP LTER ground-dwelling arthropod monitoring site in the McDowell Mountain Park are included for comparison. Diversity (Shannon-Weaver (H')) was relatively consistent with little difference among sites, though diversity was higher at all Preserve sites relative to McDowell Mountain Park (Table 2). Though overall diversity was relatively similar among sites, an ordination (Non-metric Multidimensional Scaling (NMDS), Bray-Curtis distance) of the combined 2012 data suggests 'regional' differences with relatively unique assemblages near the Tom's Thumb trail head, Brown's Ranch trail head, and all others toward the southern-end of the Preserve (Figure 2). Regional differences across paired sites generally outweigh relatively smaller differences between boundary and interior assemblages within paired locations. 
+
+```{r plot_by_seaons, echo=FALSE, fig.width=8, fig.cap="Figure 1. seasonal averages across sampling sites"}
+
+# We will use ggplot to plot our data, here plotting each site in its own panel 
+ggplot(orgs_by_season, aes(x=year, y=average, fill = factor(season))) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  facet_wrap(~site_id) +
+  labs(x = "year") +
+  labs(y = "average number of organisms per trap per season") +
+  labs(fill = 'season') +
+  ggtitle("McDowell Sonoran Preserve ground-dwelling arthropods: 2012-2016") +
+  scale_fill_manual(values = c('#e6e6e6', '#cccccc', '#999999', '#000080')) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+### Discussion
+
+  The goals of this study are to (1) provide an assessment of the ground-dwelling arthropod community in the Preserve as part of the broader efforts of the MSFI, and (2) to examine arthropod assemblages in the context of ecological stress stemming from development pressure at the Preserve boundary. This project would not be possible without the strong support of the McDowell Sonoran Conservancy, the City of Scottsdale, and the tremendous efforts of the Preserve stewards. The project has and continues to benefit from the broader collaboration with MSFI participants.
+
+
+### Literature cited
